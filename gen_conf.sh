@@ -1,3 +1,3 @@
 #! /bin/bash
 
-cp konbini.json ~/.konbini.json 
+cp konbini.json $HOME/.konbini.json 

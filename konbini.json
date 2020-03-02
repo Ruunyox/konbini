@@ -3,8 +3,8 @@
   "search_engine" : "https://google.com/search?q=",
   "pads" : { 
     "[ Reddit ]" : { 
-      "items" : ["unixporn", "cyberpunk", "linux"],
-      "names" : ["unixporn", "cyberpunk", "linux"],
+      "items" : ["cyberpunk", "linux"],
+      "names" : ["cyberpunk", "linux"],
       "command" : "/Applications/Firefox.app/Contents/MacOS/firefox",
       "flags" : false,
       "arg_prepend" : "https://reddit.com/r/",
@@ -28,5 +28,5 @@
       }
   },
   "fg" : 0,
-  "bg" : -1
+  "bg" : 7
 }
