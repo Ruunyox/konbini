@@ -1,0 +1,32 @@
+{
+  "browser" : "/Applications/Firefox.app/Contents/MacOS/firefox",
+  "search_engine" : "https://google.com/search?q=",
+  "pads" : { 
+    "[ Reddit ]" : { 
+      "items" : ["unixporn", "cyberpunk", "linux"],
+      "names" : ["unixporn", "cyberpunk", "linux"],
+      "command" : "/Applications/Firefox.app/Contents/MacOS/firefox",
+      "flags" : false,
+      "arg_prepend" : "https://reddit.com/r/",
+      "arg_post" : false
+      },    
+    "[ Web ]" : {
+      "items" : ["https://youtube.com", "https://artstation.com", "https://gmail.com", "https://linkedin.com", "https://github.com", "http://dotshare.it", "https://www.rcsb.org"],
+      "names" : ["Youtube", "Artstation", "Gmail", "LinkedIn", "Github", "dotshare", "PDB"],
+      "command" : "/Applications/Firefox.app/Contents/MacOS/firefox",
+      "flags" : false,
+      "arg_prepend" : false,
+      "arg_post" : false
+      },
+    "[ Apps ]" : {
+      "items" : ["chimera", "vmd", "zotero", "slack"],
+      "names" : ["Chimera", "VMD", "Zotero", "Slack"],
+      "command" : "open",
+      "flags" : ["-a"],
+      "arg_prepend" : false,
+      "arg_post" : false
+      }
+  },
+  "fg" : 0,
+  "bg" : -1
+}
