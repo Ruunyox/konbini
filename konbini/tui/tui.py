@@ -5,8 +5,9 @@ import os
 from datetime import datetime
 from time import sleep
 
+
 def curses_init(fg, bg):
-    rows, cols = os.popen('stty size', 'r').read().split()
+    rows, cols = os.popen("stty size", "r").read().split()
     screen = curses.initscr()
     curses.noecho()
     curses.curs_set(0)
@@ -23,7 +24,7 @@ def curses_init(fg, bg):
 
 
 def check_term_size(menu):
-    if (menu.rows//2 - menu.largest_list//2 - 4) < 0 or (menu.cols - 24) < 0:
+    if (menu.rows // 2 - menu.largest_list // 2 - 4) < 0 or (menu.cols - 24) < 0:
         menu.screen.erase()
         curses.endwin()
         print("Error: Terminal is too small.")
@@ -38,28 +39,27 @@ def tui_loop(rc_path):
     menu.draw_datetime()
     menu.draw_all_pads()
     menu.draw_active()
-    while(ch != ord('q')):
+    while ch != ord("q"):
         ch = menu.screen.getch()
-        if ch == ord('\t'):
+        if ch == ord("\t"):
             menu.draw_active(highlight=False)
             menu.active = (menu.active + 1) % len(menu.pads)
             menu.draw_active()
         if ch == curses.KEY_DOWN:
-            menu.pads[menu.active].selection = ((menu.pads[menu.active].selection + 1)
-                                                % len(menu.pads[menu.active].item_list))
+            menu.pads[menu.active].selection = (
+                menu.pads[menu.active].selection + 1
+            ) % len(menu.pads[menu.active].item_list)
             menu.draw_active()
         if ch == curses.KEY_UP and menu.pads[menu.active].selection == 0:
-            menu.pads[menu.active].selection = len(
-                menu.pads[menu.active].item_list)
+            menu.pads[menu.active].selection = len(menu.pads[menu.active].item_list)
             menu.draw_active()
         if ch == curses.KEY_UP and menu.pads[menu.active].selection != 0:
-            menu.pads[menu.active].selection = (
-                menu.pads[menu.active].selection - 1)
+            menu.pads[menu.active].selection = menu.pads[menu.active].selection - 1
             menu.draw_active()
         if ch == 10:
             menu.pads[menu.active].spawn()
             menu.draw_active()
-        if ch == ord('s'):
+        if ch == ord("s"):
             # curses.echo()
             menu.search_pad.enter_search()
             curses.noecho()
@@ -71,9 +71,11 @@ def tui_loop(rc_path):
             check_term_size(menu)
             menu.draw_statics()
             menu.draw_datetime()
-            menu.search_pad.set_dimensions(menu.rows//2 - menu.largest_list//2 - 2,
-                                           menu.cols//5,
-                                           3*menu.cols//5)
+            menu.search_pad.set_dimensions(
+                menu.rows // 2 - menu.largest_list // 2 - 2,
+                menu.cols // 5,
+                3 * menu.cols // 5,
+            )
             menu.draw_all_pads()
             menu.draw_active()
     menu.screen.erase()
@@ -81,10 +83,10 @@ def tui_loop(rc_path):
     exit()
 
 
-class SearchPad():
-
-    def __init__(self, ypos, x_left, n_cols, cmd, search_engine, color_pair,
-                 reverse=True):
+class SearchPad:
+    def __init__(
+        self, ypos, x_left, n_cols, cmd, search_engine, color_pair, reverse=True
+    ):
         self.ypos = ypos
         self.x_left = x_left
         self.n_cols = n_cols
@@ -115,7 +117,7 @@ class SearchPad():
     def enter_search(self):
         search_string = ""
         sch = None
-        while(sch != 10):
+        while sch != 10:
             sch = self.pad.getch()
             if sch == 10:
                 break
@@ -133,14 +135,20 @@ class SearchPad():
             self.draw_pad()
 
     def query(self, search_string):
-        subprocess.Popen([self.cmd, self.search_engine + search_string],
-                         shell=False)
+        subprocess.Popen([self.cmd, self.search_engine + search_string], shell=False)
 
 
-class ListPad():
-
-    def __init__(self, cmd, item_list, names, color_pair, flags=None,
-                 arg_prepend=None, arg_post=None):
+class ListPad:
+    def __init__(
+        self,
+        cmd,
+        item_list,
+        names,
+        color_pair,
+        flags=None,
+        arg_prepend=None,
+        arg_post=None,
+    ):
         self.cmd = cmd
         if flags:
             self.flags = flags
@@ -157,8 +165,7 @@ class ListPad():
         self.item_list = item_list
         self.names = names
         self.selection = 0
-        self.pad = curses.newpad(len(item_list) + 100,
-                                 len(item_list) + 100)
+        self.pad = curses.newpad(len(item_list) + 100, len(item_list) + 100)
         self.pad.bkgd(color_pair)
         self.scroll = 0
 
@@ -167,14 +174,15 @@ class ListPad():
         self.pad.prefresh(v_scroll, h_scroll, y1, x1, y2, x2)
 
     def spawn(self):
-        subprocess.Popen([self.cmd] + self.flags +
-                         [(self.arg_prepend + self.item_list[self.selection]
-                           + self.arg_post)],
-                         shell=False)
+        subprocess.Popen(
+            [self.cmd]
+            + self.flags
+            + [(self.arg_prepend + self.item_list[self.selection] + self.arg_post)],
+            shell=False,
+        )
 
 
-class Menu():
-
+class Menu:
     def __init__(self, rc_path):
         self.rc_path = rc_path
         self.active = 0
@@ -198,7 +206,7 @@ class Menu():
         return largest_list
 
     def get_dimensions(self):
-        rows, cols = os.popen('stty size', 'r').read().split()
+        rows, cols = os.popen("stty size", "r").read().split()
         self.rows = int(rows)
         self.cols = int(cols)
 
@@ -212,39 +220,52 @@ class Menu():
         for pad in pads.keys():
             if len(pads[pad]["items"]) != len(pads[pad]["names"]):
                 raise RuntimeError(
-                    "Items and names must be the same. Check json rc file.")
+                    "Items and names must be the same. Check json rc file."
+                )
                 exit(1)
             self.titles.append(str(pad))
-            self.pads.append(ListPad(pads[pad]["command"],
-                                     pads[pad]["items"],
-                                     pads[pad]["names"],
-                                     curses.color_pair(1),
-                                     flags=pads[pad]["flags"],
-                                     arg_prepend=pads[pad]["arg_prepend"],
-                                     arg_post=pads[pad]["arg_post"]))
+            self.pads.append(
+                ListPad(
+                    pads[pad]["command"],
+                    pads[pad]["items"],
+                    pads[pad]["names"],
+                    curses.color_pair(1),
+                    flags=pads[pad]["flags"],
+                    arg_prepend=pads[pad]["arg_prepend"],
+                    arg_post=pads[pad]["arg_post"],
+                )
+            )
         self.largest_list = self.get_largest_list()
-        if self.largest_list > self.rows//2:
-            self.largest_list = self.rows//2
+        if self.largest_list > self.rows // 2:
+            self.largest_list = self.rows // 2
         browser = rc["browser"]
         search_engine = rc["search_engine"]
-        self.search_pad = SearchPad(self.rows//2 - self.largest_list//2 - 2,
-                                    self.cols//5,
-                                    3*self.cols//5,
-                                    browser, search_engine, curses.color_pair(2))
+        self.search_pad = SearchPad(
+            self.rows // 2 - self.largest_list // 2 - 2,
+            self.cols // 5,
+            3 * self.cols // 5,
+            browser,
+            search_engine,
+            curses.color_pair(2),
+        )
 
     def draw_statics(self):
         for num, title in enumerate(self.titles):
-            self.screen.addstr(self.rows//2 - self.largest_list//2,
-                               (num + 1) * self.cols//(len(self.pads) + 1) -
-                               len(title)//2,
-                               title)
+            self.screen.addstr(
+                self.rows // 2 - self.largest_list // 2,
+                (num + 1) * self.cols // (len(self.pads) + 1) - len(title) // 2,
+                title,
+            )
         self.screen.refresh()
 
     def draw_datetime(self):
         now = datetime.now()
         date_and_time = now.strftime("%d/%m/%Y  -  %H:%M:%S")
-        self.screen.addstr(self.rows//2 - self.largest_list//2 - 4,
-                           self.cols//2 - len(date_and_time)//2, date_and_time)
+        self.screen.addstr(
+            self.rows // 2 - self.largest_list // 2 - 4,
+            self.cols // 2 - len(date_and_time) // 2,
+            date_and_time,
+        )
 
     def draw_active(self, highlight=True):
         self.pads[self.active].pad.erase()
@@ -252,24 +273,39 @@ class Menu():
             if self.pads[self.active].selection == num and highlight == True:
                 self.pads[self.active].pad.addstr(num, 0, ">")
             self.pads[self.active].pad.addstr(num, 3, item)
-            if len(self.pads[self.active].names) > self.rows//2:
-                scroll = max(
-                    0, self.pads[self.active].selection - self.rows//2 + 1)
-                self.pads[self.active].pad.refresh(scroll, 0,
-                                                   self.rows//2 - self.largest_list//2 + 2,
-                                                   ((self.active + 1) * self.cols//(len(self.pads) + 1)
-                                                    - self.cols//(len(self.pads) + 4)),
-                                                   self.rows//2 + self.largest_list//2 + 2,
-                                                   ((self.active + 2) * self.cols//(len(self.pads) + 1)
-                                                       - 2 - self.cols//(len(self.pads) + 4)))
+            if len(self.pads[self.active].names) > self.rows // 2:
+                scroll = max(0, self.pads[self.active].selection - self.rows // 2 + 1)
+                self.pads[self.active].pad.refresh(
+                    scroll,
+                    0,
+                    self.rows // 2 - self.largest_list // 2 + 2,
+                    (
+                        (self.active + 1) * self.cols // (len(self.pads) + 1)
+                        - self.cols // (len(self.pads) + 4)
+                    ),
+                    self.rows // 2 + self.largest_list // 2 + 2,
+                    (
+                        (self.active + 2) * self.cols // (len(self.pads) + 1)
+                        - 2
+                        - self.cols // (len(self.pads) + 4)
+                    ),
+                )
             else:
-                self.pads[self.active].pad.refresh(0, 0,
-                                                   self.rows//2 - self.largest_list//2 + 2,
-                                                   ((self.active + 1) * self.cols//(len(self.pads) + 1)
-                                                    - self.cols//(len(self.pads) + 4)),
-                                                   self.rows//2 + self.largest_list//2 + 2,
-                                                   ((self.active + 2) * self.cols//(len(self.pads) + 1)
-                                                       - 2 - self.cols//(len(self.pads) + 4)))
+                self.pads[self.active].pad.refresh(
+                    0,
+                    0,
+                    self.rows // 2 - self.largest_list // 2 + 2,
+                    (
+                        (self.active + 1) * self.cols // (len(self.pads) + 1)
+                        - self.cols // (len(self.pads) + 4)
+                    ),
+                    self.rows // 2 + self.largest_list // 2 + 2,
+                    (
+                        (self.active + 2) * self.cols // (len(self.pads) + 1)
+                        - 2
+                        - self.cols // (len(self.pads) + 4)
+                    ),
+                )
 
     def draw_all_pads(self):
         self.screen.refresh()
@@ -281,4 +317,4 @@ class Menu():
 
 
 def main_loop():
-    tui_loop(os.getenv("HOME")+"/.konbini.json")
+    tui_loop(os.getenv("HOME") + "/.konbini.json")
